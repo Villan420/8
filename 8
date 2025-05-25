@@ -1,298 +1,236 @@
-<!DOCTYPE html>
+App.js
 
-<html lang="en">
+function App() {
 
-<head>
+return (
 
- <meta charset="UTF-8">
+<div>
 
- <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<Reminder />
 
- <title>Visitor Counter</title>
+</div>
 
- <style>
+);
 
- body {
+}
 
- font-family: Arial, sans-serif;
+export default App;
 
- line-height: 1.6;
+Reminder.js
 
- margin: 0;
+import React, { useState } from "react";
+mport './App.css';
 
- padding: 20px;
+function Reminder() {
 
- background-color: #f4f4f4;
+const [tasks, setTasks] = useState([]);
 
- }
+const [task, setTask] = useState({ name: "", due: "", desc: "" });
 
- .container {
+const [filter, setFilter] = useState("all");
 
- max-width: 600px;
+const addTask = () => {
 
- margin: auto;
+if (!task.name || !task.due) return;
 
- background: white;
+setTasks([...tasks, { ...task, id: Date.now(), completed: false }]);
 
- padding: 20px;
+setTask({ name: "", due: "", desc: "" });
 
- border-radius: 5px;
+};
 
- box-shadow: 0 0 10px rgba(0,0,0,0.1);
+const toggleCompletion = (id) => {
 
- }
+setTasks(tasks.map(t => t.id === id ? { ...t, completed: !t.completed }
 
- h1 {
+: t));
 
- color: #333;
+};
 
- text-align: center;
+const filteredTasks = tasks.filter(t =>
 
- }
+filter === "all" ? true : filter === "completed" ? t.completed :
 
- .counter {
+!t.completed
 
- font-size: 24px;
+);
 
-text-align: center;
+return (
 
- margin-top: 20px;
+<div className="container">
 
- }
+<h2>Add New Task</h2>
 
- </style>
+<input placeholder="Task Name" value={task.name} onChange={e
 
-</head>
+=> setTask({ ...task, name: e.target.value })} />
 
-<body>
+<input type="date" value={task.due} onChange={e => setTask({
 
- <div class="container">
+...task, due: e.target.value })} />
 
- <h1>Welcome to Our Website</h1>
+<textarea placeholder="Description (optional)" value={task.desc}
 
- <div class="counter">
+onChange={e => setTask({ ...task, desc: e.target.value })} />
 
- <?php
+<button onClick={addTask}>Add Task</button>
 
- $counterFile = 'counter.txt';
+<h3>Filter</h3>
 
- // Read the current count
+<select value={filter} onChange={e => setFilter(e.target.value)}>
 
- if (file_exists($counterFile)) {
+<option value="all">All Tasks</option>
 
- $count = (int)file_get_contents($counterFile);
-} else {
+<option value="completed">Completed Tasks</option>
 
- $count = 0;
+<option value="pending">Pending Tasks</option>
 
- }
+</select>
 
- // Increment the count
+<ul>
 
- $count++;
+{filteredTasks.map(t => (
 
- // Save the new count
+<li key={t.id} className={`task-item ${t.completed ? "completed" :
 
-file_put_contents($counterFile, $count);
+"pending"}`}>
 
- // Display the count
+<div className="task-header">
 
- echo "<h2>Visitor Count</h2>";
+<strong>{t.name}</strong>
 
- echo "<p>You are visitor number: $count</p>";
+<button onClick={() => toggleCompletion(t.id)}>
 
- ?>
+{t.completed ? "Mark as Pending" : "Mark as Completed"}
 
- </div>
+</button>
 
- </div>
+</div>
 
-</body>
+<div><strong>Due:</strong> {t.due}</div>
 
-</html>
+{t.desc && <div><strong>Note:</strong> {t.desc}</div>}
+<div className="status-label">Status: {t.completed ? "Completed" :
 
-8b. Develop a PHP program (with HTML/CSS) to sort the student records which are stored
+"Pending"}</div>
 
-in the database using selection sort.
+</li>
 
-<!DOCTYPE html>
+))}
 
-<html lang="en">
+{filteredTasks.length === 0 && <p className="no-tasks">No tasks
 
-<head>
+to display</p>}
 
- <meta charset="UTF-8">
+</ul>
 
- <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</div>
 
- <title>Student Record Sorter</title>
+);
 
- <style>
+}
 
- body {
+export default Reminder;
 
- font-family: Arial, sans-serif;
+App.css
 
- line-height: 1.6;
+body {
 
- margin: 0;
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 
- padding: 20px;
+background-color: #f0f4f8;
 
- background-color: #f4f4f4;
+margin: 0;
 
- }
+padding: 20px;
 
- .container {
+color: #333;
 
- max-width: 800px;
+}
 
- margin: auto;
+.container {
 
- background: white;
+max-width: 600px;
 
- padding: 20px;
+margin: auto;
 
- border-radius: 5px;
+background-color: #ffffff;
 
- box-shadow: 0 0 10px rgba(0,0,0,0.1);
+padding: 30px;
 
- }
+border-radius: 12px;
 
- h1 {
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 
- color: #333;
+}
 
- text-align: center;
+h2, h3 {
 
- }
+color: #2c3e50;
 
- table {
+margin-bottom: 15px;
 
- width: 100%;
-border-collapse: collapse;
+}
 
- margin-top: 20px;
+input, textarea, select, button {
 
- }
+width: 100%;
 
- th, td {
+margin-bottom: 15px;
 
- padding: 10px;
+padding: 10px;
 
- border: 1px solid #ddd;
+font-size: 15px;
 
- text-align: left;
+border: 1px solid #ccc;
 
- }
+border-radius: 8px;
 
- th {
+box-sizing: border-box;
 
- background-color: #f2f2f2;
+}
 
- }
+textarea {
 
- </style>
+resize: vertical;
 
-</head>
+}
 
-<body>
+button {
 
- <div class="container">
+background-color: #4a90e2;
 
- <h1>Student Records</h1>
+color: white;
+font-weight: bold;
 
- <?php
+border: none;
 
- // Database connection details
+cursor: pointer;
 
- $host = 'localhost';
+transition: background-color 0.3s ease;
 
- $dbname = 'student_records';
+}
 
- $username = 'root';
+button:hover {
 
- $password = 'vcetputtur';
+background-color: #357abd;
 
- try {
+}
 
- $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+ul {
 
- $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+list-style: none;
 
- // Fetch student records
+padding: 0;
 
- $stmt = $pdo->query("SELECT * FROM students");
+}
 
-$students = $stmt->fetchAll(PDO::FETCH_ASSOC);
+.task-item {
 
- // Selection sort function
+padding: 15px;
 
- function selectionSort(&$arr, $n) {
+margin-bottom: 12px;
 
- for ($i = 0; $i < $n - 1; $i++) {
+border-radius: 8px;
 
- $min_idx = $i;
-
- for ($j = $i + 1; $j < $n; $j++) {
-
- if ($arr[$j]['gpa'] < $arr[$min_idx]['gpa']) {
-
- $min_idx = $j;
-
- }
-
- }
-
- if ($min_idx != $i) {
-
- $temp = $arr[$i];
-
- $arr[$i] = $arr[$min_idx];
-
- $arr[$min_idx] = $temp;
-
- }
-
- }
-
- }
-
- // Sort students by GPA
-
- selectionSort($students, count($students));
-// Display sorted student records
-
- echo "<table>";
-
- echo "<tr><th>ID</th><th>Name</th><th>GPA</th></tr>";
-
- foreach ($students as $student) {
-
- echo "<tr>";
-
- echo "<td>" . htmlspecialchars($student['id']) . "</td>";
-
- echo "<td>" . htmlspecialchars($student['name']) . "</td>";
-
-echo "<td>" . htmlspecialchars($student['gpa']) . "</td>";
-
- echo "</tr>";
-
- }
-
- echo "</table>";
-
- } catch(PDOException $e) {
-
- echo "Connection failed: " . $e->getMessage();
-
- }
-
- ?>
-
- </div>
-
-</body>
-
-</html>
+}
