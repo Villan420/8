@@ -1,236 +1,54 @@
-App.js
+import pandas as pd
 
-function App() {
+import numpy as np
 
-return (
+from sklearn.model_selection import train_test_split
 
-<div>
+from sklearn.tree import DecisionTreeClassifier, export_text
+from sklearn.metrics import accuracy_score
 
-<Reminder />
+data = pd.read_csv('breast_cancer_data.csv')
 
-</div>
+X = data.drop(columns='target')
 
-);
+y = data['target']
 
-}
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-export default App;
+dt_classifier = DecisionTreeClassifier(random_state=42)
 
-Reminder.js
+dt_classifier.fit(X_train, y_train)
 
-import React, { useState } from "react";
-mport './App.css';
+y_pred = dt_classifier.predict(X_test)
 
-function Reminder() {
+accuracy = accuracy_score(y_test, y_pred)
 
-const [tasks, setTasks] = useState([]);
+print(f"Accuracy of Decision Tree Classifier: {accuracy:.2f}")
 
-const [task, setTask] = useState({ name: "", due: "", desc: "" });
+print("\nDecision Tree Rules:")
 
-const [filter, setFilter] = useState("all");
+tree_rules = export_text(dt_classifier, feature_names=list(X.columns))
 
-const addTask = () => {
+print(tree_rules)
 
-if (!task.name || !task.due) return;
+new_sample = np.array([
 
-setTasks([...tasks, { ...task, id: Date.now(), completed: false }]);
+14.6, 21.7, 94.7, 577.6, 0.102, 0.125, 0.078,
 
-setTask({ name: "", due: "", desc: "" });
+0.057, 0.159, 0.06, 0.02, 0.039, 0.029, 0.046,
 
-};
+0.063, 0.07, 0.113, 0.144, 0.24, 0.104, 0.111,
 
-const toggleCompletion = (id) => {
+0.051, 0.002, 0.004, 0.002, 0.007, 0.015, 0.014,
 
-setTasks(tasks.map(t => t.id === id ? { ...t, completed: !t.completed }
+0.027, 0.023
 
-: t));
+]).reshape(1, -1)
 
-};
+new_sample_df = pd.DataFrame(new_sample, columns=X.columns)
 
-const filteredTasks = tasks.filter(t =>
+prediction = dt_classifier.predict(new_sample_df)
 
-filter === "all" ? true : filter === "completed" ? t.completed :
+class_label = 'Malignant' if prediction[0] == 1 else 'Benign'
 
-!t.completed
-
-);
-
-return (
-
-<div className="container">
-
-<h2>Add New Task</h2>
-
-<input placeholder="Task Name" value={task.name} onChange={e
-
-=> setTask({ ...task, name: e.target.value })} />
-
-<input type="date" value={task.due} onChange={e => setTask({
-
-...task, due: e.target.value })} />
-
-<textarea placeholder="Description (optional)" value={task.desc}
-
-onChange={e => setTask({ ...task, desc: e.target.value })} />
-
-<button onClick={addTask}>Add Task</button>
-
-<h3>Filter</h3>
-
-<select value={filter} onChange={e => setFilter(e.target.value)}>
-
-<option value="all">All Tasks</option>
-
-<option value="completed">Completed Tasks</option>
-
-<option value="pending">Pending Tasks</option>
-
-</select>
-
-<ul>
-
-{filteredTasks.map(t => (
-
-<li key={t.id} className={`task-item ${t.completed ? "completed" :
-
-"pending"}`}>
-
-<div className="task-header">
-
-<strong>{t.name}</strong>
-
-<button onClick={() => toggleCompletion(t.id)}>
-
-{t.completed ? "Mark as Pending" : "Mark as Completed"}
-
-</button>
-
-</div>
-
-<div><strong>Due:</strong> {t.due}</div>
-
-{t.desc && <div><strong>Note:</strong> {t.desc}</div>}
-<div className="status-label">Status: {t.completed ? "Completed" :
-
-"Pending"}</div>
-
-</li>
-
-))}
-
-{filteredTasks.length === 0 && <p className="no-tasks">No tasks
-
-to display</p>}
-
-</ul>
-
-</div>
-
-);
-
-}
-
-export default Reminder;
-
-App.css
-
-body {
-
-font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-
-background-color: #f0f4f8;
-
-margin: 0;
-
-padding: 20px;
-
-color: #333;
-
-}
-
-.container {
-
-max-width: 600px;
-
-margin: auto;
-
-background-color: #ffffff;
-
-padding: 30px;
-
-border-radius: 12px;
-
-box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-
-}
-
-h2, h3 {
-
-color: #2c3e50;
-
-margin-bottom: 15px;
-
-}
-
-input, textarea, select, button {
-
-width: 100%;
-
-margin-bottom: 15px;
-
-padding: 10px;
-
-font-size: 15px;
-
-border: 1px solid #ccc;
-
-border-radius: 8px;
-
-box-sizing: border-box;
-
-}
-
-textarea {
-
-resize: vertical;
-
-}
-
-button {
-
-background-color: #4a90e2;
-
-color: white;
-font-weight: bold;
-
-border: none;
-
-cursor: pointer;
-
-transition: background-color 0.3s ease;
-
-}
-
-button:hover {
-
-background-color: #357abd;
-
-}
-
-ul {
-
-list-style: none;
-
-padding: 0;
-
-}
-
-.task-item {
-
-padding: 15px;
-
-margin-bottom: 12px;
-
-border-radius: 8px;
-
-}
+print(f"\nThe predicted class for the new sample is: {class_label}")
